@@ -1,0 +1,17 @@
+<mat-card-actions>
+  <button mat-raised-button color="primary" (click)="goBack()">Retour</button>
+</mat-card-actions>
+
+@if (user) {
+<div class="container">
+  <h2>User Details</h2>
+
+  <mat-card class="user-card">
+      <mat-card-content>
+        <p><strong>Nom </strong> {{user.name}}</p>
+        <p><strong>Email </strong> {{user.email}}</p>
+
+      </mat-card-content>
+  </mat-card>
+</div>
+}

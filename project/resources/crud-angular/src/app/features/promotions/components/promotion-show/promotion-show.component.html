@@ -1,0 +1,53 @@
+<mat-card-actions>
+  <button mat-raised-button color="primary" (click)="goBack()">Retour</button>
+</mat-card-actions>
+
+@if (promotion) {
+<div class="container">
+  <h2>Promotion Details</h2>
+
+  <mat-card class="promotion-card">
+    <mat-card-content>
+
+      <p><strong>Nom </strong> {{ promotion.name }}</p>
+
+      <p><strong>Type de remise </strong>
+        {{ promotion.type === 'percentage' ? 'Pourcentage' : 'Montant fixe' }}
+        — <strong>{{ promotion.discount_label }}</strong>
+      </p>
+
+      <p><strong>Cible </strong> {{ targetLabel }}</p>
+
+      @if (promotion.code) {
+        <p><strong>Code coupon </strong> <code>{{ promotion.code }}</code></p>
+      }
+
+      <p><strong>Statut </strong>
+        <mat-chip [color]="statusColor(promotion.status)" highlighted>{{ promotion.status }}</mat-chip>
+      </p>
+
+      <p><strong>Priorité </strong> {{ promotion.priority }}</p>
+
+      @if (promotion.starts_at) {
+        <p><strong>Début </strong> {{ promotion.starts_at | slice:0:10 }}</p>
+      }
+      @if (promotion.ends_at) {
+        <p><strong>Fin </strong> {{ promotion.ends_at | slice:0:10 }}</p>
+      }
+
+      @if (promotion.usage_limit) {
+        <p><strong>Limite d'utilisation </strong> {{ promotion.times_used }} / {{ promotion.usage_limit }}</p>
+      }
+      @if (promotion.per_customer_limit) {
+        <p><strong>Limite par client </strong> {{ promotion.per_customer_limit }}</p>
+      }
+
+    </mat-card-content>
+  </mat-card>
+</div>
+}
+
+<style>
+  .promotion-card { max-width: 480px; }
+  code { background: #f4f4f4; padding: 2px 6px; border-radius: 4px; }
+</style>

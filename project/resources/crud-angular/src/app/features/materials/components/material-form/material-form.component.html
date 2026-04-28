@@ -1,0 +1,35 @@
+<mat-card-actions>
+  <button mat-raised-button color="primary" (click)="goBack()">Retour</button>
+</mat-card-actions>
+
+<div class="container">
+  <mat-card-header>
+    <mat-card-title>{{ isEditMode ? 'Modifier' : 'Ajouter' }} un matériel</mat-card-title>
+  </mat-card-header>
+
+  <form [formGroup]="materialForm" (ngSubmit)="onSubmit()">
+
+    <mat-form-field>
+      <mat-label>Designation</mat-label>
+      <input matInput formControlName="designation" type="text" placeholder="Ex: Ordinateur portable">
+      @if (materialForm.get('designation')?.invalid) {
+        <mat-error>{{ getErrorMessage('designation') }}</mat-error>
+      }
+    </mat-form-field> <br />
+
+    <mat-form-field>
+      <mat-label>Prix (€)</mat-label>
+      <input matInput formControlName="price" type="number" min="0" step="0.01" placeholder="Ex: 49.99">
+      @if (materialForm.get('price')?.invalid) {
+        <mat-error>{{ getErrorMessage('price') }}</mat-error>
+      }
+    </mat-form-field> <br />
+
+    <div class="actions">
+      <button mat-raised-button color="primary" type="submit" [disabled]="materialForm.invalid">
+        {{ isEditMode ? 'Modifier' : 'Créer' }}
+      </button>
+      <button mat-button [routerLink]="['/material']" type="button">Annuler</button>
+    </div>
+  </form>
+</div>

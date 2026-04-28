@@ -1,0 +1,50 @@
+<mat-card-actions>
+  <button mat-raised-button color="primary" (click)="goBack()">Retour</button>
+</mat-card-actions>
+
+<div class="container">
+  <mat-card-header>
+    <mat-card-title>{{ isEditMode ? 'Modifier' : 'Ajouter' }} un utilisateur</mat-card-title>
+  </mat-card-header>
+
+  <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+    <mat-form-field>
+      <mat-label>Nom</mat-label>
+      <input matInput formControlName="name">
+      @if (userForm.get('name')?.invalid) {
+        <mat-error>
+          {{ getErrorMessage('name') }}
+        </mat-error>
+      }
+    </mat-form-field> <br />
+
+    <mat-form-field>
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="email" type="email">
+      @if (userForm.get('email')?.invalid) {
+        <mat-error>
+          {{ getErrorMessage('email') }}
+        </mat-error>
+      }
+    </mat-form-field> <br />
+
+    @if (!isEditMode) {
+      <mat-form-field>
+        <mat-label>Password</mat-label>
+        <input matInput formControlName="password">
+        @if (userForm.get('password')?.invalid) {
+          <mat-error>
+            {{ getErrorMessage('password') }}
+          </mat-error>
+        }
+      </mat-form-field>
+    }
+
+    <div class="actions">
+      <button mat-raised-button color="primary" type="submit" [disabled]="!userForm.valid">
+        {{ isEditMode ? 'Modifier' : 'Créer' }}
+      </button>
+      <button mat-button (click)="goBack()" type="button">Annuler</button>
+    </div>
+  </form>
+</div>

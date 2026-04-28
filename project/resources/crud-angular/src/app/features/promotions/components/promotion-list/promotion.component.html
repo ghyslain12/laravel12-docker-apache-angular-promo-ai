@@ -1,0 +1,70 @@
+<table>
+  <tr>
+    <td>
+      <mat-form-field>
+        <mat-label>Filtrer</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Promo été" #input>
+      </mat-form-field>
+    </td>
+    <td>
+      <button mat-raised-button color="primary" (click)="goToAdd()">Ajouter Promotion</button>
+    </td>
+  </tr>
+</table>
+
+<div class="mat-elevation-z8">
+  <table mat-table [dataSource]="dataSource" matSort>
+
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+      <td mat-cell *matCellDef="let row">{{ row.id }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Nom</th>
+      <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="type">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Type remise</th>
+      <td mat-cell *matCellDef="let row">
+        {{ row.type === 'percentage' ? 'Pourcentage' : 'Montant fixe' }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="value">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Valeur</th>
+      <td mat-cell *matCellDef="let row">{{ row.discount_label }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="target_type">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Cible</th>
+      <td mat-cell *matCellDef="let row">{{ targetLabel(row) }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Statut</th>
+      <td mat-cell *matCellDef="let row">
+        <mat-chip [color]="statusColor(row.status)" highlighted>{{ row.status }}</mat-chip>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>Actions</th>
+      <td mat-cell *matCellDef="let element">
+        <button mat-button (click)="viewPromotion(element)">Voir</button>
+        <button mat-button (click)="editPromotion(element)">Modifier</button>
+        <button mat-button color="warn" (click)="deletePromotion(element)">Supprimer</button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell" colspan="7">Aucune promotion trouvée "{{ input.value }}"</td>
+    </tr>
+  </table>
+
+  <mat-paginator [pageSizeOptions]="[5, 10, 25]" aria-label="Pagination promotions"></mat-paginator>
+</div>

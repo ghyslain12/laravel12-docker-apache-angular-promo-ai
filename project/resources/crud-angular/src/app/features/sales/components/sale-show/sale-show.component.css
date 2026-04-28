@@ -1,0 +1,90 @@
+.container {
+  padding: 20px;
+  max-width: 1200px;
+}
+
+.details-row {
+  display: flex;
+  gap: 16px;
+  align-items: stretch;
+  margin-bottom: 16px;
+}
+
+.box-card {
+  flex: 1;
+  margin: 0 !important;
+  border: 1px solid #e0e0e0 !important;
+  box-shadow: none !important;
+  background: white !important;
+}
+
+.scroll-area {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.material-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.total-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.invoice-layout {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.button-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field-fill {
+  flex: 1;
+}
+
+.old-price {
+  text-decoration: line-through;
+  color: #aaa;
+  margin-right: 4px;
+}
+
+.success-msg { color: #4caf50; font-size: 0.9em; margin-top: 8px; }
+.error-msg { color: #f44336; font-size: 0.9em; margin-top: 8px; }
+
+.flag-text {
+  font-family: 'Noto Color Emoji', sans-serif;
+  font-size: 1.4em;
+  margin-right: 12px;
+  display: inline-block;
+  vertical-align: middle;
+}
+.flag-img {
+  width: 20px;
+  height: auto;
+  margin-right: 12px;
+  vertical-align: middle;
+  border-radius: 2px;
+  box-shadow: 0 0 1px rgba(0,0,0,0.2);
+}
+
+.country-name {
+  vertical-align: middle;
+}
+
+.materials-list {
+  max-height: 105px;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+

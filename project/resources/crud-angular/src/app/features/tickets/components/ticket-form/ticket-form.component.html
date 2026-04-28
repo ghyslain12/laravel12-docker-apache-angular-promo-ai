@@ -1,0 +1,62 @@
+<mat-card-actions>
+  <button mat-raised-button color="primary" (click)="goBack()">Retour</button>
+</mat-card-actions>
+
+<div class="container">
+  <mat-card-header>
+    <mat-card-title>{{ isEditMode ? 'Modifier' : 'Ajouter' }} un ticket</mat-card-title>
+  </mat-card-header>
+
+  <form [formGroup]="ticketForm" (ngSubmit)="onSubmit()">
+    <mat-form-field>
+      <mat-label>Titre</mat-label>
+      <input matInput formControlName="titre" type="titre">
+      @if (ticketForm.get('titre')?.invalid) {
+        <mat-error>
+          {{ getErrorMessage('titre') }}
+        </mat-error>
+      }
+    </mat-form-field> <br />
+
+    <mat-form-field>
+      <mat-label>Description</mat-label>
+      <textarea matInput
+        formControlName="description"
+        cdkTextareaAutosize
+        #autosize="cdkTextareaAutosize"
+        cdkAutosizeMinRows="5"
+      cdkAutosizeMaxRows="5"></textarea>
+      @if (ticketForm.get('decription')?.invalid) {
+        <mat-error>
+          {{ getErrorMessage('description') }}
+        </mat-error>
+      }
+    </mat-form-field> <br />
+
+    @if (sales) {
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Ventes</mat-label>
+        <mat-select formControlName="sale_id">
+          @for (sale of sales; track sale.id) {
+            <mat-option [value]="sale.id">
+              {{sale.titre}}
+            </mat-option>
+          }
+        </mat-select>
+
+        @if (ticketForm.get('sale_id')?.hasError('required')) {
+          <mat-error>
+            La sélection d'une vente est requise
+          </mat-error>
+        }
+      </mat-form-field>
+    }
+
+    <div class="actions">
+      <button mat-raised-button color="primary" type="submit" [disabled]="!ticketForm.valid">
+        {{ isEditMode ? 'Modifier' : 'Créer' }}
+      </button>
+      <button mat-button [routerLink]="['/ticket']" type="button">Annuler</button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,122 @@
+<mat-card-actions>
+  <button mat-raised-button color="primary" (click)="goBack()">Retour</button>
+</mat-card-actions>
+
+<div class="container">
+  <mat-card-header>
+    <mat-card-title>{{ isEditMode ? 'Modifier' : 'Ajouter' }} une vente</mat-card-title>
+  </mat-card-header>
+
+  <form [formGroup]="saleForm" (ngSubmit)="onSubmit()">
+
+    <mat-form-field>
+      <mat-label>Titre</mat-label>
+      <input matInput formControlName="titre" type="text">
+      @if (saleForm.get('titre')?.invalid) {
+        <mat-error>{{ getErrorMessage('titre') }}</mat-error>
+      }
+    </mat-form-field> <br />
+
+    <mat-form-field>
+      <mat-label>Description</mat-label>
+      <textarea matInput formControlName="description"
+        cdkTextareaAutosize cdkAutosizeMinRows="5" cdkAutosizeMaxRows="5"></textarea>
+      @if (saleForm.get('description')?.invalid) {
+        <mat-error>{{ getErrorMessage('description') }}</mat-error>
+      }
+    </mat-form-field> <br />
+
+    @if (clients) {
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>clients</mat-label>
+        <mat-select formControlName="customer_id">
+          @for (client of clients; track client.id) {
+            <mat-option [value]="client.id">{{ client.surnom }}</mat-option>
+          }
+        </mat-select>
+        @if (saleForm.get('customer_id')?.hasError('required')) {
+          <mat-error>La sélection d'un client est requise</mat-error>
+        }
+      </mat-form-field>
+    }
+
+    <div class="materials-row">
+
+      <mat-card class="materials-card">
+        <mat-card-header>
+          <mat-card-title>materials</mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="scroll-list">
+          @for (material of materials; track material.id) {
+            @if (saleForm.get('material_' + material.id)) {
+              <div class="material-row">
+                <mat-checkbox [formControlName]="'material_' + material.id" color="primary">
+                  {{ material.designation }}
+                </mat-checkbox>
+                <span class="price">{{ material.price | currency:'EUR':'symbol':'1.2-2' }}</span>
+              </div>
+            }
+          }
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="total-card">
+        <mat-card-content>
+          <p class="total-label">Totale: {{ totalPrice | currency:'EUR':'symbol':'1.2-2' }}</p>
+          @for (m of selectedMaterials; track m.id) {
+            <p class="total-item">- {{ m.designation }} ({{ m.price | currency:'EUR':'symbol':'1.2-2' }})</p>
+          }
+        </mat-card-content>
+      </mat-card>
+
+    </div>
+
+    <div class="actions">
+      <button mat-raised-button color="primary" type="submit" [disabled]="!saleForm.valid">
+        {{ isEditMode ? 'Modifier' : 'Créer' }}
+      </button>
+      <button mat-button [routerLink]="['/sale']" type="button">Annuler</button>
+    </div>
+
+  </form>
+</div>
+
+<style>
+  .materials-row {
+    display: flex;
+    gap: 16px;
+    margin: 16px 0;
+    align-items: flex-start;
+  }
+  .materials-card {
+    flex: 1;
+    max-width: 260px;
+  }
+  .total-card {
+    flex: 1;
+    max-width: 220px;
+  }
+  .scroll-list {
+    max-height: 160px;
+    overflow-y: auto;
+  }
+  .material-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2px 0;
+  }
+  .price {
+    font-size: 0.85em;
+    color: #555;
+    margin-left: 8px;
+  }
+  .total-label {
+    font-weight: bold;
+    margin-bottom: 8px;
+  }
+  .total-item {
+    margin: 2px 0;
+    font-size: 0.9em;
+  }
+</style>

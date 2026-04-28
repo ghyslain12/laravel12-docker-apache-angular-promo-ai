@@ -1,0 +1,1312 @@
+openapi: 3.0.0
+info:
+  title: 'Laravel CRUD API'
+  description: "Documentation de l'API pour gérer les utilisateurs, clients, matériaux, ventes et tickets"
+  version: 1.0.0
+servers:
+  -
+    url: 'http://localhost:8741/api'
+    description: 'Serveur local'
+paths:
+  /login:
+    post:
+      summary: 'Authentifie un utilisateur et retourne un token'
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: test@test.com
+                password:
+                  type: string
+                  example: test
+              required:
+                - email
+                - password
+      responses:
+        '200':
+          description: 'Authentification réussie'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        '401':
+          description: 'Identifiants invalides'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+  /user:
+    get:
+      summary: "Récupère l'utilisateur authentifié"
+      tags:
+        - Authentication
+      security:
+        -
+          bearerAuth: []
+      responses:
+        '200':
+          description: 'Utilisateur authentifié'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: 'Non authentifié'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+  /utilisateur/ping:
+    get:
+      summary: "Ping pour tester l'accès utilisateur"
+      tags:
+        - Utilisateur
+      responses:
+        '200':
+          description: 'Réponse de ping réussie'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: pong
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: '2024-10-09 12:00:00'
+  /material/ping:
+    get:
+      summary: "Ping pour tester l'accès matériel"
+      tags:
+        - Material
+      responses:
+        '200':
+          description: 'Réponse de ping réussie'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: pong
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: '2024-10-09 12:00:00'
+  /client:
+    get:
+      summary: 'Liste tous les clients'
+      tags:
+        - Client
+      security:
+        -
+          bearerAuth: []
+      responses:
+        '200':
+          description: 'Liste des clients'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CustomerWithUser'
+        '401':
+          description: 'Non authentifié'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+    post:
+      summary: 'Crée un nouveau client'
+      tags:
+        - Client
+      security:
+        -
+          bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerInput'
+      responses:
+        '201':
+          description: 'Client créé'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerWithUser'
+        '401':
+          description: 'Non authentifié'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '422':
+          description: 'Validation échouée'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorValidation'
+  '/client/{id}':
+    get:
+      summary: 'Récupère un client spécifique'
+      tags:
+        - Client
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: 'Détails du client'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerWithUser'
+        '401':
+          description: 'Non authentifié'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '404':
+          description: 'Client non trouvé'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorNotFound'
+    put:
+      summary: 'Met à jour un client'
+      tags:
+        - Client
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerInput'
+      responses:
+        '200':
+          description: 'Client mis à jour'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerWithUser'
+        '401':
+          description: 'Non authentifié'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '404':
+          description: 'Client non trouvé'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorNotFound'
+        '422':
+          description: 'Validation échouée'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorValidation'
+    delete:
+      summary: 'Supprime un client'
+      tags:
+        - Client
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '204':
+          description: 'Client supprimé'
+        '401':
+          description: 'Non authentifié'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '404':
+          description: 'Client non trouvé'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorNotFound'
+  /material:
+    get:
+      summary: 'Liste tous les matériaux'
+      tags:
+        - Material
+      security:
+        -
+          bearerAuth: []
+      responses:
+        '200':
+          description: 'Liste des matériaux'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Material'
+        '401':
+          description: 'Non authentifié'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+    post:
+      summary: 'Crée un nouveau matériau'
+      tags:
+        - Material
+      security:
+        -
+          bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MaterialInput'
+      responses:
+        '201':
+          description: 'Matériau créé'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Material'
+        '401':
+          description: 'Non authentifié'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '422':
+          description: 'Validation échouée'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorValidation'
+  '/material/{id}':
+    get:
+      summary: 'Récupère un matériau spécifique'
+      tags:
+        - Material
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: 'Détails du matériau'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Material'
+        '401':
+          description: 'Non authentifié'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '404':
+          description: 'Matériau non trouvé'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorNotFound'
+    put:
+      summary: 'Met à jour un matériau'
+      tags:
+        - Material
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MaterialInput'
+      responses:
+        '200':
+          description: 'Matériau mis à jour'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Material'
+        '401':
+          description: 'Non authentifié'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '404':
+          description: 'Matériau non trouvé'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorNotFound'
+        '422':
+          description: 'Validation échouée'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorValidation'
+    delete:
+      summary: 'Supprime un matériau'
+      tags:
+        - Material
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '204':
+          description: 'Matériau supprimé'
+        '401':
+          description: 'Non authentifié'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '404':
+          description: 'Matériau non trouvé'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorNotFound'
+  /sale:
+    get:
+      summary: 'Liste toutes les ventes'
+      tags:
+        - Sale
+      security:
+        -
+          bearerAuth: []
+      responses:
+        '200':
+          description: 'Liste des ventes'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SaleWithRelations'
+        '401':
+          description: 'Non authentifié'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+    post:
+      summary: 'Crée une nouvelle vente'
+      tags:
+        - Sale
+      security:
+        -
+          bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaleInput'
+      responses:
+        '201':
+          description: 'Vente créée'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SaleWithRelations'
+        '401':
+          description: 'Non authentifié'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '422':
+          description: 'Validation échouée'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorValidation'
+  '/sale/{id}':
+    get:
+      summary: 'Récupère une vente spécifique'
+      tags:
+        - Sale
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: 'Détails de la vente'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SaleWithRelations'
+        '401':
+          description: 'Non authentifié'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '404':
+          description: 'Vente non trouvée'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorNotFound'
+    put:
+      summary: 'Met à jour une vente'
+      tags:
+        - Sale
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaleInput'
+      responses:
+        '200':
+          description: 'Vente mise à jour'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SaleWithRelations'
+        '401':
+          description: 'Non authentifié'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '404':
+          description: 'Vente non trouvée'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorNotFound'
+        '422':
+          description: 'Validation échouée'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorValidation'
+    delete:
+      summary: 'Supprime une vente'
+      tags:
+        - Sale
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '204':
+          description: 'Vente supprimée'
+        '401':
+          description: 'Non authentifié'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '404':
+          description: 'Vente non trouvée'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorNotFound'
+  /ticket:
+    get:
+      summary: 'Liste tous les tickets'
+      tags:
+        - Ticket
+      security:
+        -
+          bearerAuth: []
+      responses:
+        '200':
+          description: 'Liste des tickets'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TicketWithSale'
+        '401':
+          description: 'Non authentifié'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+    post:
+      summary: 'Crée un nouveau ticket'
+      tags:
+        - Ticket
+      security:
+        -
+          bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketInput'
+      responses:
+        '201':
+          description: 'Ticket créé'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketWithSale'
+        '401':
+          description: 'Non authentifié'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '422':
+          description: 'Validation échouée'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorValidation'
+  '/ticket/{id}':
+    get:
+      summary: 'Récupère un ticket spécifique'
+      tags:
+        - Ticket
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: 'Détails du ticket'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketWithSale'
+        '401':
+          description: 'Non authentifié'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '404':
+          description: 'Ticket non trouvé'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorNotFound'
+    put:
+      summary: 'Met à jour un ticket'
+      tags:
+        - Ticket
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketInput'
+      responses:
+        '200':
+          description: 'Ticket mis à jour'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketWithSale'
+        '401':
+          description: 'Non authentifié'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '404':
+          description: 'Ticket non trouvé'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorNotFound'
+        '422':
+          description: 'Validation échouée'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorValidation'
+    delete:
+      summary: 'Supprime un ticket'
+      tags:
+        - Ticket
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '204':
+          description: 'Ticket supprimé'
+        '401':
+          description: 'Non authentifié'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '404':
+          description: 'Ticket non trouvé'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorNotFound'
+  /utilisateur:
+    get:
+      summary: 'Liste tous les utilisateurs'
+      tags:
+        - Utilisateur
+      security:
+        -
+          bearerAuth: []
+      responses:
+        '200':
+          description: 'Liste des utilisateurs'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '401':
+          description: 'Non authentifié'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+    post:
+      summary: 'Crée un nouvel utilisateur'
+      tags:
+        - Utilisateur
+      security:
+        -
+          bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInput'
+      responses:
+        '201':
+          description: 'Utilisateur créé'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: 'Non authentifié'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '422':
+          description: 'Validation échouée'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorValidation'
+  '/utilisateur/{id}':
+    get:
+      summary: 'Récupère un utilisateur spécifique'
+      tags:
+        - Utilisateur
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: "Détails de l'utilisateur"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: 'Non authentifié'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '404':
+          description: 'Utilisateur non trouvé'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorNotFound'
+    put:
+      summary: 'Met à jour un utilisateur'
+      tags:
+        - Utilisateur
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateInput'
+      responses:
+        '200':
+          description: 'Utilisateur mis à jour'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: 'Non authentifié'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '404':
+          description: 'Utilisateur non trouvé'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorNotFound'
+        '422':
+          description: 'Validation échouée'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorValidation'
+    delete:
+      summary: 'Supprime un utilisateur'
+      tags:
+        - Utilisateur
+      security:
+        -
+          bearerAuth: []
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '204':
+          description: 'Utilisateur supprimé'
+        '401':
+          description: 'Non authentifié'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '404':
+          description: 'Utilisateur non trouvé'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorNotFound'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Token JWT ou Sanctum requis pour les endpoints protégés'
+  schemas:
+    # -------------------------
+    # Input schemas (request body)
+    # -------------------------
+    UserInput:
+      type: object
+      required:
+        - name
+        - email
+        - password
+      properties:
+        name:
+          type: string
+          example: 'John Doe'
+        email:
+          type: string
+          format: email
+          example: john@example.com
+        password:
+          type: string
+          format: password
+          example: password123
+    UserUpdateInput:
+      type: object
+      properties:
+        name:
+          type: string
+          example: 'Updated Name'
+        email:
+          type: string
+          format: email
+          example: updated@example.com
+        password:
+          type: string
+          format: password
+          example: newpassword123
+    CustomerInput:
+      type: object
+      required:
+        - surnom
+        - user_id
+      properties:
+        surnom:
+          type: string
+          example: Client1
+        user_id:
+          type: integer
+          example: 1
+    MaterialInput:
+      type: object
+      required:
+        - designation
+      properties:
+        designation:
+          type: string
+          example: Material1
+    SaleInput:
+      type: object
+      required:
+        - titre
+        - customer_id
+      properties:
+        titre:
+          type: string
+          example: Sale1
+        description:
+          type: string
+          nullable: true
+          example: 'Description of Sale1'
+        customer_id:
+          type: integer
+          example: 1
+        materials:
+          type: array
+          description: 'Liste des IDs de matériaux à associer à la vente (many-to-many via material_sale)'
+          items:
+            type: integer
+          example: [1, 2]
+    TicketInput:
+      type: object
+      required:
+        - titre
+        - sale_id
+      properties:
+        titre:
+          type: string
+          example: Ticket1
+        description:
+          type: string
+          nullable: true
+          example: 'Description of Ticket1'
+        sale_id:
+          type: integer
+          example: 1
+    # -------------------------
+    # Response schemas
+    # -------------------------
+    User:
+      type: object
+      required:
+        - id
+        - name
+        - email
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: 'John Doe'
+        email:
+          type: string
+          format: email
+          example: john@example.com
+        created_at:
+          type: string
+          format: date-time
+          example: '2024-10-09T10:00:00.000000Z'
+        updated_at:
+          type: string
+          format: date-time
+          example: '2024-10-09T10:00:00.000000Z'
+    Customer:
+      type: object
+      required:
+        - id
+        - surnom
+        - user_id
+      properties:
+        id:
+          type: integer
+          example: 1
+        surnom:
+          type: string
+          example: Client1
+        user_id:
+          type: integer
+          example: 1
+        created_at:
+          type: string
+          format: date-time
+          example: '2024-10-09T10:00:00.000000Z'
+        updated_at:
+          type: string
+          format: date-time
+          example: '2024-10-09T10:00:00.000000Z'
+    CustomerWithUser:
+      allOf:
+        - $ref: '#/components/schemas/Customer'
+        - type: object
+          properties:
+            user:
+              $ref: '#/components/schemas/User'
+    Material:
+      type: object
+      required:
+        - id
+        - designation
+      properties:
+        id:
+          type: integer
+          example: 1
+        designation:
+          type: string
+          example: Material1
+        created_at:
+          type: string
+          format: date-time
+          example: '2024-10-09T10:00:00.000000Z'
+        updated_at:
+          type: string
+          format: date-time
+          example: '2024-10-09T10:00:00.000000Z'
+    Sale:
+      type: object
+      required:
+        - id
+        - titre
+        - customer_id
+      properties:
+        id:
+          type: integer
+          example: 1
+        titre:
+          type: string
+          example: Sale1
+        description:
+          type: string
+          nullable: true
+          example: 'Description of Sale1'
+        customer_id:
+          type: integer
+          example: 1
+        created_at:
+          type: string
+          format: date-time
+          example: '2024-10-09T10:00:00.000000Z'
+        updated_at:
+          type: string
+          format: date-time
+          example: '2024-10-09T10:00:00.000000Z'
+    SaleWithRelations:
+      allOf:
+        - $ref: '#/components/schemas/Sale'
+        - type: object
+          properties:
+            customer:
+              $ref: '#/components/schemas/CustomerWithUser'
+            materials:
+              type: array
+              items:
+                $ref: '#/components/schemas/Material'
+            tickets:
+              type: array
+              items:
+                $ref: '#/components/schemas/TicketSimple'
+      example:
+        id: 1
+        titre: Sale1
+        description: 'Description of Sale1'
+        customer_id: 1
+        created_at: '2024-10-09T10:00:00.000000Z'
+        updated_at: '2024-10-09T10:00:00.000000Z'
+        customer:
+          id: 1
+          surnom: Client1
+          user_id: 1
+          created_at: '2024-10-09T10:00:00.000000Z'
+          updated_at: '2024-10-09T10:00:00.000000Z'
+          user:
+            id: 1
+            name: 'John Doe'
+            email: john@example.com
+            created_at: '2024-10-09T10:00:00.000000Z'
+            updated_at: '2024-10-09T10:00:00.000000Z'
+        materials:
+          - id: 1
+            designation: Material1
+            created_at: '2024-10-09T10:00:00.000000Z'
+            updated_at: '2024-10-09T10:00:00.000000Z'
+        tickets:
+          - id: 1
+            titre: Ticket1
+            description: 'Description of Ticket1'
+            sale_id: 1
+            created_at: '2024-10-09T10:00:00.000000Z'
+            updated_at: '2024-10-09T10:00:00.000000Z'
+    TicketSimple:
+      type: object
+      description: 'Ticket sans objet sale imbriqué (pour éviter la récursion dans SaleWithRelations)'
+      required:
+        - id
+        - titre
+        - sale_id
+      properties:
+        id:
+          type: integer
+          example: 1
+        titre:
+          type: string
+          example: Ticket1
+        description:
+          type: string
+          nullable: true
+          example: 'Description of Ticket1'
+        sale_id:
+          type: integer
+          example: 1
+        created_at:
+          type: string
+          format: date-time
+          example: '2024-10-09T10:00:00.000000Z'
+        updated_at:
+          type: string
+          format: date-time
+          example: '2024-10-09T10:00:00.000000Z'
+    Ticket:
+      type: object
+      required:
+        - id
+        - titre
+        - sale_id
+      properties:
+        id:
+          type: integer
+          example: 1
+        titre:
+          type: string
+          example: Ticket1
+        description:
+          type: string
+          nullable: true
+          example: 'Description of Ticket1'
+        sale_id:
+          type: integer
+          example: 1
+        created_at:
+          type: string
+          format: date-time
+          example: '2024-10-09T10:00:00.000000Z'
+        updated_at:
+          type: string
+          format: date-time
+          example: '2024-10-09T10:00:00.000000Z'
+    TicketWithSale:
+      allOf:
+        - $ref: '#/components/schemas/Ticket'
+        - type: object
+          properties:
+            sale:
+              $ref: '#/components/schemas/Sale'
+      example:
+        id: 1
+        titre: Ticket1
+        description: 'Description of Ticket1'
+        sale_id: 1
+        created_at: '2024-10-09T10:00:00.000000Z'
+        updated_at: '2024-10-09T10:00:00.000000Z'
+        sale:
+          id: 1
+          titre: Sale1
+          description: 'Description of Sale1'
+          customer_id: 1
+          created_at: '2024-10-09T10:00:00.000000Z'
+          updated_at: '2024-10-09T10:00:00.000000Z'
+    # -------------------------
+    # Error schemas
+    # -------------------------
+    ErrorUnauthorized:
+      type: object
+      properties:
+        error:
+          type: string
+          example: 'Identifiants invalides'
+    ErrorNotFound:
+      type: object
+      properties:
+        message:
+          type: string
+          example: 'No query results for model'
+    ErrorValidation:
+      type: object
+      properties:
+        message:
+          type: string
+          example: 'The given data was invalid.'
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          example:
+            surnom:
+              - 'The surnom field is required.'
+            user_id:
+              - 'The user_id field is required.'
+security:
+  -
+    bearerAuth: []

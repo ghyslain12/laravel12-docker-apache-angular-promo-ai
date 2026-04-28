@@ -1,0 +1,47 @@
+<mat-card-actions>
+  <button mat-raised-button color="primary" (click)="goBack()">Retour</button>
+</mat-card-actions>
+
+<div class="container">
+  <mat-card-header>
+    <mat-card-title>{{ isEditMode ? 'Modifier' : 'Ajouter' }} un client</mat-card-title>
+  </mat-card-header>
+
+  <form [formGroup]="clientForm" (ngSubmit)="onSubmit()">
+    <mat-form-field>
+      <mat-label>Surnom</mat-label>
+      <input matInput formControlName="surnom" type="surnom">
+      @if (clientForm.get('surnom')?.invalid) {
+        <mat-error>
+          {{ getErrorMessage('surnom') }}
+        </mat-error>
+      }
+    </mat-form-field> <br />
+
+    @if (users) {
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>utilisateurs</mat-label>
+        <mat-select formControlName="user_id">
+          @for (user of users; track user.id) {
+            <mat-option [value]="user.id">
+              {{user.name}}
+            </mat-option>
+          }
+        </mat-select>
+
+        @if (clientForm.get('user_id')?.hasError('required')) {
+          <mat-error>
+            La sélection d'un utilisateur est requise
+          </mat-error>
+        }
+      </mat-form-field>
+    }
+
+    <div class="actions">
+      <button mat-raised-button color="primary" type="submit" [disabled]="!clientForm.valid">
+        {{ isEditMode ? 'Modifier' : 'Créer' }}
+      </button>
+      <button mat-button [routerLink]="['/client']" type="button">Annuler</button>
+    </div>
+  </form>
+</div>

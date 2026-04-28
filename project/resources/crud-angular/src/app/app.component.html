@@ -1,0 +1,26 @@
+<body>
+    <div class="container">
+        <header class="header">
+            <nav>
+                <h1>Logo</h1>
+            </nav>
+        </header>
+
+        <aside class="sidebar">
+            <app-sidebar></app-sidebar>
+        </aside>
+
+        <main class="main">
+            @if (loading) {
+                <div class="spinner-container">
+                  <mat-spinner diameter="50" style="display: inline-block; margin-left: 10px;"></mat-spinner>
+                </div>
+            }
+            <router-outlet></router-outlet>
+        </main>
+
+        <footer class="footer">
+            <p>&copy; 2025 - footer</p>
+        </footer>
+    </div>
+</body>

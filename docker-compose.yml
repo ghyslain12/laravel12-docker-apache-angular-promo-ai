@@ -1,0 +1,77 @@
+version: "3.8"
+services:
+  db:
+    image: mysql:8.4
+    container_name: app_db_laravel_angular
+    restart: on-failure
+    ports:
+      - "3306:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: gigi
+      MYSQL_DATABASE: app
+      MYSQL_USER: gigi
+      MYSQL_PASSWORD: gigi
+    networks:
+      - app_laravel_angular
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: app_phpmyadmin_laravel_react
+    restart: on-failure
+    depends_on:
+      - db
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: db
+      PMA_USER: gigi
+      PMA_PASSWORD: gigi
+    networks:
+      - app_laravel_angular
+
+  app:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    container_name: laravel_app
+    restart: on-failure
+    volumes:
+      - ./project:/var/www
+      - ./docker/php/custom-opcache.ini:/usr/local/etc/php/conf.d/docker-php-ext-opcache.ini
+    ports:
+      - "8741:8000"
+      - "5173:5173"
+    depends_on:
+      - db
+      - redis
+    networks:
+      - app_laravel_angular
+
+  angular-app:
+    build:
+      context: ./project/resources/crud-angular
+      dockerfile: Dockerfile
+    container_name: angular_app
+    restart: on-failure
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./project/resources/crud-angular:/app
+      - /app/node_modules
+    networks:
+      - app_laravel_angular
+
+  redis:
+    image: redis:alpine
+    container_name: app_redis
+    networks:
+      - app_laravel_angular
+
+networks:
+  app_laravel_angular:
+    driver: bridge
+
+volumes:
+  db-data:

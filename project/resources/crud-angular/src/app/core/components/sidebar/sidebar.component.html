@@ -1,0 +1,50 @@
+<div id="hautbar">
+  <nav class="sidebar">
+    <ul class="menu">
+
+      @if (logged) {
+        <li>
+          <button [style]="buttontyle" mat-raised-button color="primary" id="btnLogout" (click)="logout()">
+            Déconnexion
+          </button>
+        </li>
+      }
+
+      @for (item of menuItems; track item.label) {
+        <li [class.has-submenu]="item.submenu.length > 0"
+            [class.open]="item.isOpen">
+
+          @if (item.route) {
+            <a [routerLink]="item.route" routerLinkActive="active">
+              <i class="fa {{item.icon}}"></i>
+              <span>{{item.label}}</span>
+            </a>
+          } @else {
+            <a (click)="toggleSubmenu(item)"
+               (keyup.enter)="toggleSubmenu(item)"
+               class="clickable"
+               tabindex="0"
+               role="button">
+              <i class="fa {{item.icon}}"></i>
+              <span>{{item.label}}</span>
+              <i class="fa fa-chevron-down arrow"></i>
+            </a>
+          }
+
+          @if (item.submenu.length > 0) {
+            <ul class="submenu">
+              @for (subitem of item.submenu; track subitem.label) {
+                <li>
+                  <a [routerLink]="subitem.route" routerLinkActive="active">
+                    {{subitem.label}}
+                  </a>
+                </li>
+              }
+            </ul>
+          }
+        </li>
+      }
+
+    </ul>
+  </nav>
+</div>

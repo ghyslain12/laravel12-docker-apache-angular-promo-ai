@@ -1,0 +1,18 @@
+<mat-card-actions>
+  <button mat-raised-button color="primary" (click)="goBack()">Retour</button>
+</mat-card-actions>
+
+@if (ticket) {
+<div class="container">
+  <h2>Ticket Details</h2>
+
+  <mat-card class="ticket-card">
+      <mat-card-content>
+        <p><strong>Titre </strong> {{ticket.titre}}</p>
+        <p><strong>Description </strong> {{ticket.description}}</p>
+        <p><strong>Vente </strong> {{ticket.sale?.titre}}</p>
+        
+      </mat-card-content>
+  </mat-card> 
+</div>
+}

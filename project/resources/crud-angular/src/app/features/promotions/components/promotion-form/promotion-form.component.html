@@ -1,0 +1,106 @@
+<mat-card-actions>
+  <button mat-raised-button color="primary" (click)="goBack()">Retour</button>
+</mat-card-actions>
+
+<div class="container">
+  <mat-card-header>
+    <mat-card-title>{{ isEditMode ? 'Modifier' : 'Ajouter' }} une promotion</mat-card-title>
+  </mat-card-header>
+
+  <form [formGroup]="promotionForm" (ngSubmit)="onSubmit()">
+
+    <mat-form-field>
+      <mat-label>Nom</mat-label>
+      <input matInput formControlName="name" placeholder="Ex: Promo été">
+      @if (promotionForm.get('name')?.invalid) {
+        <mat-error>{{ getErrorMessage('name') }}</mat-error>
+      }
+    </mat-form-field> <br />
+
+    <mat-form-field appearance="outline">
+      <mat-label>Type de promotion</mat-label>
+      <mat-select formControlName="target_type">
+        <mat-option value="all">Globale (tous matériaux)</mat-option>
+        <mat-option value="material">Par matériau</mat-option>
+        <mat-option value="coupon">Code coupon</mat-option>
+      </mat-select>
+    </mat-form-field> <br />
+
+    @if (isMaterial) {
+      <mat-form-field appearance="outline">
+        <mat-label>Matériau cible</mat-label>
+        <mat-select formControlName="target_id">
+          @for (m of materials; track m.id) {
+            <mat-option [value]="m.id">{{ m.designation }} ({{ m.price }}€)</mat-option>
+          }
+        </mat-select>
+        @if (promotionForm.get('target_id')?.invalid) {
+          <mat-error>{{ getErrorMessage('target_id') }}</mat-error>
+        }
+      </mat-form-field> <br />
+    }
+
+    @if (isCoupon) {
+      <mat-form-field>
+        <mat-label>Code promo</mat-label>
+        <input matInput formControlName="code" placeholder="Ex: ETE2025" style="text-transform:uppercase">
+        @if (promotionForm.get('code')?.invalid) {
+          <mat-error>{{ getErrorMessage('code') }}</mat-error>
+        }
+      </mat-form-field> <br />
+    }
+
+    <mat-form-field appearance="outline">
+      <mat-label>Type de remise</mat-label>
+      <mat-select formControlName="type">
+        <mat-option value="percentage">Pourcentage (%)</mat-option>
+        <mat-option value="fixed_amount">Montant fixe (€)</mat-option>
+      </mat-select>
+    </mat-form-field> <br />
+
+    <mat-form-field>
+      <mat-label>Valeur</mat-label>
+      <input matInput formControlName="value" type="number" min="0.01" step="0.01" placeholder="Ex: 15">
+      @if (promotionForm.get('value')?.invalid) {
+        <mat-error>{{ getErrorMessage('value') }}</mat-error>
+      }
+    </mat-form-field> <br />
+
+    <mat-form-field>
+      <mat-label>Date de début</mat-label>
+      <input matInput formControlName="starts_at" type="datetime-local">
+    </mat-form-field> <br />
+
+    <mat-form-field>
+      <mat-label>Date de fin</mat-label>
+      <input matInput formControlName="ends_at" type="datetime-local">
+    </mat-form-field> <br />
+
+    @if (isCoupon) {
+      <mat-form-field>
+        <mat-label>Limite d'utilisation globale</mat-label>
+        <input matInput formControlName="usage_limit" type="number" min="1">
+      </mat-form-field> <br />
+
+      <mat-form-field>
+        <mat-label>Limite par client</mat-label>
+        <input matInput formControlName="per_customer_limit" type="number" min="1">
+      </mat-form-field> <br />
+    }
+
+    <mat-form-field>
+      <mat-label>Priorité (0–100)</mat-label>
+      <input matInput formControlName="priority" type="number" min="0" max="100">
+    </mat-form-field> <br />
+
+    <mat-checkbox formControlName="active" color="primary">Active</mat-checkbox>
+
+    <div class="actions" style="margin-top: 16px">
+      <button mat-raised-button color="primary" type="submit" [disabled]="promotionForm.invalid">
+        {{ isEditMode ? 'Modifier' : 'Créer' }}
+      </button>
+      <button mat-button [routerLink]="['/promotion']" type="button">Annuler</button>
+    </div>
+
+  </form>
+</div>
